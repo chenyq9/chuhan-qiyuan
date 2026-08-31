@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.chuhan.qiyuan.engine.Board
 import com.chuhan.qiyuan.engine.Piece
@@ -46,6 +47,7 @@ fun BoardView(
         Canvas(
             modifier = Modifier
                 .matchParentSize()
+                .testTag("board")
                 .pointerInput(board, selected, flip) {
                     detectTapGestures { offset ->
                         val gc = ((offset.x - cell / 2) / cell).toInt()
