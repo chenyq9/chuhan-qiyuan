@@ -13,7 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -188,11 +190,8 @@ private fun DrawScope.drawPiece(p: Piece, gr: Int, gc: Int) {
     drawCircle(color = edgeColor, radius = radius, center = center, style = Stroke(cell * 0.035f))
     drawCircle(color = edgeColor.copy(alpha = 0.6f), radius = radius * 0.82f, center = center, style = Stroke(cell * 0.02f))
     // 棋子字
-    drawContext.canvas.nativeCanvas.drawText(
-        p.char().toString(),
-        center.x,
-        center.y + radius * 0.36f,
-        android.graphics.Paint().apply {
+    drawIntoCanvas { canvas ->
+        val paint = android.graphics.Paint().apply {
             isAntiAlias = true
             textAlign = android.graphics.Paint.Align.CENTER
             textSize = radius * 1.15f
@@ -200,7 +199,8 @@ private fun DrawScope.drawPiece(p: Piece, gr: Int, gc: Int) {
             isFakeBoldText = true
             setShadowLayer(radius * 0.05f, 0f, radius * 0.03f, 0x66000000.toInt())
         }
-    )
+        canvas.nativeCanvas.drawText(p.char().toString(), center.x, center.y + radius * 0.36f, paint)
+    }
 }
 
 private operator fun Offset.minus(o: Offset) = Offset(x - o.x, y - o.y)
