@@ -145,7 +145,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         history.add(MoveRecord(bySide, move, captured))
         posKeys.add(board.key())
         val capTxt = if (captured != null) "（吃 ${captured.char()}）" else ""
-        addSystem("${bySide.cn()}：${move.coordNotation()}$capTxt")
+        if (captured != null) addSystem("吃掉${captured.char()}！")
         turn = turn.opposite()
         persist()
 
