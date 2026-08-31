@@ -7,9 +7,9 @@ import org.json.JSONObject
  * 设置存储：API 配置 + 人设。全部存应用私有目录，不上传。
  */
 data class AppSettings(
-    val endpoint: String = "https://api.t80nb.me/v1",
+    val endpoint: String = "https://api.deepseek.com",
     val apiKey: String = "",
-    val model: String = "glm-5.3-flash",
+    val model: String = "deepseek-chat",
     val temperature: Double = 0.7,
     val timeoutSec: Long = 60,
     val moveMaxTokens: Int = 2500,
@@ -26,9 +26,9 @@ class SettingsRepository(private val context: Context) {
         return try {
             val o = JSONObject(raw)
             AppSettings(
-                endpoint = o.optString("endpoint", AppSettings().endpoint),
+                endpoint = o.optString("endpoint", "https://api.deepseek.com"),
                 apiKey = o.optString("apiKey", ""),
-                model = o.optString("model", AppSettings().model),
+                model = o.optString("model", "deepseek-chat"),
                 temperature = o.optDouble("temperature", 0.7),
                 timeoutSec = o.optLong("timeoutSec", 60),
                 moveMaxTokens = o.optInt("moveMaxTokens", 2500).coerceAtLeast(2000),
