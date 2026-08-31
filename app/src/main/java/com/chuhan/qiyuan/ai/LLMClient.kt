@@ -86,7 +86,16 @@ class LLMClient(
             val choices = root["choices"] as? kotlinx.serialization.json.JsonArray ?: return null
             val first = choices.firstOrNull() as? kotlinx.serialization.json.JsonObject ?: return null
             val msg = first["message"] as? kotlinx.serialization.json.JsonObject ?: return null
-            (msg["content"] as? kotlinx.serialization.json.JsonPrimitive)?.content
+            // 1) 取正文；2) 剥离内联的思考段；3) 正文为空时回退到 reasoning_content（思考型模型兜底）
+            val content = (msg["content"] as? kotlinx.serialization.json.JsonPrimitive)?.content ?: ""
+            val stripped = content.replace(Regex("(?s)<think>.*?</think>"), "").trim()
+            if (stripped.isNotBlank()) return stripped
+            val reasoning = (msg["reasoning_content"] as? kotlinx.serialization.json.JsonPrimitive)?.content ?: ""
+            if (reasoning.isNotBlank()) {
+                // 思考内容里也可能藏着正式走法（如 "from h2 to e2"），把它当原文交给解析器抠坐标
+                return reasoning.replace(Regex("(?s)<think>.*?</think>"), "").trim().ifBlank { reasoning.trim() }
+            }
+            content.trim().ifBlank { null }
         } catch (e: Exception) {
             null
         }
@@ -94,7 +103,7 @@ class LLMClient(
 
     /** 快速连通性测试：返回 null 表示成功，否则返回错误描述 */
     suspend fun testConnection(): String? = try {
-        val reply = chat(listOf("user" to "请只回复两个字：正常"), 16)
+        val reply = chat(listOf("user" to "请只回复两个字：正常"), 512)
         if (reply.isBlank()) "模型回复为空" else null
     } catch (e: Exception) {
         e.message ?: "连接失败"
