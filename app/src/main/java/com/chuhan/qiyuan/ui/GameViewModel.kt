@@ -347,7 +347,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         val b = board; val h = history.toList(); val mem = chatMemory(); val per = persona(); val hs = humanSide
         viewModelScope.launch {
             try {
-                val reply = llm.chat(PromptBuilder.adviceMessages(b, aiSide, hs, h, mem, per), 400)
+                val reply = llm.chat(PromptBuilder.adviceMessages(b, aiSide, hs, h, mem, per), 800)
                 addAI(reply.trim())
             } catch (e: CancellationException) {
             } catch (e: Exception) {
