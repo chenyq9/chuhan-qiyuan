@@ -76,7 +76,7 @@ object PromptBuilder {
             appendLine()
             appendLine("【坐标规则】每个格子用 列字母(a-i)+行数字(0-9) 表示，例如 e2、h7。走法写作 \"from到to\"，如 h2-e2。")
             appendLine()
-            appendLine("【输出要求（最重要）】你的回复必须以一个 JSON 对象开头，且只输出这一个 JSON 对象，格式：")
+            appendLine("【输出要求（最重要）】必须用简体中文思考和作答。你的回复必须以一个 JSON 对象开头，且只输出这一个 JSON 对象，格式：")
             appendLine("""{"from":"起点坐标","to":"终点坐标","chat":"想对对手说的话","resign":false,"undo_request":false}""")
             appendLine("from/to 是你这步棋的起点和终点坐标；chat 是你想对对手说的话，不想说就填空字符串；resign 填 true 表示你想认输；undo_request 填 true 表示你想向对手申请悔棋（撤回你自己刚走的那步）。")
             appendLine("坐标规则：如 \"h2-e2\" 表示从 h2 走到 e2。")
@@ -98,7 +98,7 @@ object PromptBuilder {
                 appendLine("===== 重要纠错 =====")
                 appendLine("你上一次的回复没有被采纳，原因：$invalidReason")
                 appendLine("你上一次的原文：${lastInvalidAttempt.rawText.take(200)}")
-                appendLine("请认真重新思考，输出一个全新的、合法的 JSON 走法。")
+                appendLine("请认真重新思考，只输出一个全新的、合法的 JSON 走法，不要输出任何思考过程或解释。")
             } else {
                 appendLine("现在轮到你走棋，请输出你的 JSON。")
             }
@@ -172,8 +172,12 @@ object PromptBuilder {
         // 第二级：从文本中抠出 {...} 片段
         val brace = Regex("\\{[^{}]*(\"from\"[^{}]*|\"to\"[^{}]*)[^{}]*\\}")
         brace.find(cleaned)?.let { tryParseJson(it.value)?.let { r -> return r } }
-        // 第三级：正则抠坐标 xx-yy
-        val loose = Move.parseLoose(cleaned)
+        // 第三级：正则抠坐标 xx-yy（仅当原文是简短走法式表达才启用——
+        // 长篇思考散文里常顺带提到格点坐标，宽松抓取会造成误判，宁可挂起交给用户调教）
+        val proseMarkers = listOf("let me", "the board", "row ", "column ", "analyz", "carefully", "understand")
+        val isThinkingProse = cleaned.length > 120 ||
+            proseMarkers.any { cleaned.lowercase().contains(it) }
+        val loose = if (!isThinkingProse) Move.parseLoose(cleaned) else null
         if (loose != null) {
             return AIAttempt(
                 rawText = cleaned,
