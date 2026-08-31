@@ -63,6 +63,9 @@ jobs:
         with:
           cache-read-only: false
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Run instrumented tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -96,6 +99,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: false
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Build Debug APK
         run: |
