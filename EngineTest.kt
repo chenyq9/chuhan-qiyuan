@@ -136,6 +136,11 @@ fun testParser() {
     check("带think标签可解析", t4.parsedAsJson && t4.from == "h2")
     val t5 = PromptBuilder.parseMoveResponse("？？？")
     check("彻底失败原文保留", !t5.parsedAsJson && t5.from == null && t5.rawText == "？？？")
+    val longProse = "Let me analyze the board carefully. The board (row 0 is black bottom line): h7 could go to e7, and g0-h2 also possible. I will consider carefully before moving."
+    val t6 = PromptBuilder.parseMoveResponse(longProse)
+    check("英文思考散文不误抓坐标", !t6.parsedAsJson && t6.from == null)
+    val t7 = PromptBuilder.parseMoveResponse("h2-e2")
+    check("简短走法式仍可解析", !t7.parsedAsJson && t7.from == "h2" && t7.to == "e2")
 }
 
 // ============ 五、棋盘数据结构 ============
