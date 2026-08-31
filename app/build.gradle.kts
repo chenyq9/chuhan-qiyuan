@@ -17,9 +17,22 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        create("cqy") {
+            storeFile = rootProject.file("keystore/cqy.keystore")
+            storePassword = "chuhan2026"
+            keyAlias = "cqy"
+            keyPassword = "chuhan2026"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("cqy")
+        }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("cqy")
         }
     }
     compileOptions {
