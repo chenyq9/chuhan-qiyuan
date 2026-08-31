@@ -12,8 +12,8 @@ data class AppSettings(
     val model: String = "glm-5.3-flash",
     val temperature: Double = 0.7,
     val timeoutSec: Long = 60,
-    val moveMaxTokens: Int = 700,
-    val chatMaxTokens: Int = 300,
+    val moveMaxTokens: Int = 2500,
+    val chatMaxTokens: Int = 600,
     val personaId: String = "friendly"
 )
 
@@ -31,8 +31,8 @@ class SettingsRepository(private val context: Context) {
                 model = o.optString("model", AppSettings().model),
                 temperature = o.optDouble("temperature", 0.7),
                 timeoutSec = o.optLong("timeoutSec", 60),
-                moveMaxTokens = o.optInt("moveMaxTokens", 700),
-                chatMaxTokens = o.optInt("chatMaxTokens", 300),
+                moveMaxTokens = o.optInt("moveMaxTokens", 2500).coerceAtLeast(2000),
+                chatMaxTokens = o.optInt("chatMaxTokens", 600).coerceAtLeast(500),
                 personaId = o.optString("personaId", "friendly")
             )
         } catch (e: Exception) {
