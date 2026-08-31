@@ -302,9 +302,9 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         aiJob?.cancel(); aiThinking = false
         val p = getApplication<Application>().getSharedPreferences("stats", Context.MODE_PRIVATE)
         when (winnerSide) {
-            humanSide -> p.edit().putInt("w", p.getInt("w", 0) + 1).apply()
-            aiSide -> p.edit().putInt("l", p.getInt("l", 0) + 1).apply()
             null -> p.edit().putInt("d", p.getInt("d", 0) + 1).apply()
+            humanSide -> p.edit().putInt("w", p.getInt("w", 0) + 1).apply()
+            else -> p.edit().putInt("l", p.getInt("l", 0) + 1).apply()
         }
         addSystem("对局结束：$reason")
         loadStats()
