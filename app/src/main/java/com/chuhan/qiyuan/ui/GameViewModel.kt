@@ -173,7 +173,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         aiJob = viewModelScope.launch {
             try {
                 val msgs = PromptBuilder.moveMessages(b, aiSide, h, mem, per, invalid?.reason, invalid?.attempt)
-                val text = llm.chat(msgs, settings.moveMaxTokens)
+                val text = llm.chat(msgs, if (settings.moveMaxTokens > 0) settings.moveMaxTokens else -1)
                 handleAIMoveReply(text)
             } catch (e: CancellationException) {
                 // 被取消（悔棋/新局），静默
