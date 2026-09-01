@@ -12,7 +12,7 @@ data class AppSettings(
     val model: String = "deepseek-chat",
     val temperature: Double = 0.7,
     val timeoutSec: Long = 60,
-    val moveMaxTokens: Int = 2500,
+    val moveMaxTokens: Int = -1,
     val chatMaxTokens: Int = 600,
     val personaId: String = "friendly"
 )
@@ -31,7 +31,7 @@ class SettingsRepository(private val context: Context) {
                 model = o.optString("model", "deepseek-chat"),
                 temperature = o.optDouble("temperature", 0.7),
                 timeoutSec = o.optLong("timeoutSec", 60),
-                moveMaxTokens = o.optInt("moveMaxTokens", 2500).coerceAtLeast(2000),
+                moveMaxTokens = o.optInt("moveMaxTokens", -1).coerceAtLeast(-1),
                 chatMaxTokens = o.optInt("chatMaxTokens", 600).coerceAtLeast(500),
                 personaId = o.optString("personaId", "friendly")
             )
