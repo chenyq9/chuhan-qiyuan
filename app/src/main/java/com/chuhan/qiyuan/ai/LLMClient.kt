@@ -56,7 +56,11 @@ class LLMClient(
                 }
                 append(']')
             }
-            val bodyJson = """{"model":"$model","messages":$arr,"temperature":$temperature,"max_tokens":$maxTokens}"""
+            // maxTokens <= 0 表示不限制（不发送 max_tokens 字段，由服务端/模型自行决定）
+            val bodyJson = if (maxTokens > 0)
+                """{"model":"$model","messages":$arr,"temperature":$temperature,"max_tokens":$maxTokens}"""
+            else
+                """{"model":"$model","messages":$arr,"temperature":$temperature}"""
             val url = if (endpoint.endsWith("/")) endpoint + "chat/completions"
                       else endpoint + "/chat/completions"
             val req = Request.Builder()
